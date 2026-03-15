@@ -1,0 +1,50 @@
+# Training Configuration
+# Paper: "Optimizing Multimodal Deep Learning Architectures for Early Disease Detection"
+
+model:
+  num_classes: 1                   # 1 = binary (disease/no-disease)
+  latent_dim: 256                  # Shared latent space dimension
+  img_backbone: resnet50           # Options: resnet50, resnet18, efficientnet_b0..b4
+  ecg_input_dim: 1                 # ECG channels (1 for single-lead, 12 for 12-lead)
+  ehr_input_dim: 64                # EHR feature vector size (after preprocessing)
+  lstm_hidden_dim: 128
+  lstm_layers: 2
+  modality_dropout_prob: 0.3       # Probability of dropping any single modality (Eq. 7)
+  num_attention_heads: 4           # Cross-modal attention heads
+  classifier_dropout: 0.4
+  pretrained_cnn: true             # Use ImageNet pretrained CNN backbone
+
+data:
+  image_size: 224                  # Input image resolution
+  ecg_sampling_rate: 500           # Hz
+  ecg_window_seconds: 60           # Seconds per ECG window
+  ecg_window_samples: 30000        # = ecg_sampling_rate * ecg_window_seconds
+  train_split: 0.70
+  val_split: 0.10
+  test_split: 0.20
+
+training:
+  epochs: 100
+  batch_size: 32
+  lr: 0.001                        # Adam initial learning rate (from paper)
+  weight_decay: 1e-4               # Adam weight decay (L2 regularization)
+  lambda_reg: 1e-4                 # λ: regularization weight (Eq. 9)
+  mu_align: 0.1                    # μ: alignment loss weight (Eq. 9)
+  patience: 10                     # Early stopping patience (epochs without improvement)
+  lr_scheduler_patience: 5         # LR reduction patience
+  lr_scheduler_factor: 0.5         # LR reduction factor
+  num_workers: 4
+  save_dir: results/checkpoints
+  use_focal_loss: false
+  focal_gamma: 2.0
+
+evaluation:
+  metrics: [auc, accuracy, precision, recall, f1, brier_score]
+  cv_folds: 5                      # 5-fold cross-validation (from paper)
+
+paths:
+  chestxray14_dir: data/raw/chestxray14/
+  mimic3_dir: data/raw/mimic3/
+  physionet_ecg_dir: data/raw/physionet_ecg/
+  processed_dir: data/processed/
+  results_dir: results/

@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+env/
+.venv/
+.conda/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Data (large files — use DVC or download scripts)
+data/raw/
+data/processed/
+*.csv
+*.pkl
+*.h5
+*.hdf5
+*.npy
+*.npz
+
+# Model checkpoints (large)
+results/checkpoints/*.pth
+results/checkpoints/*.pt
+!results/checkpoints/.gitkeep
+
+# Logs
+results/logs/
+runs/
+*.log
+tensorboard_logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Environment files (never commit secrets)
+.env
+*.env
+config/secrets.yaml
