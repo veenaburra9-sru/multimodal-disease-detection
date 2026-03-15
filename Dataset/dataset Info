@@ -1,0 +1,112 @@
+Optimizing Multimodal Deep Learning Architectures for Early Disease Detection
+1. Overview
+This document provides detailed documentation for the three benchmark datasets used in the multimodal deep learning framework for early disease detection. Each dataset contributes a distinct data modality — medical imaging, structured electronic health records (EHR), and sequential physiological time-series — enabling the model to learn complementary clinical representations across modalities.
+
+Dataset	Modality	Samples	Patients	Split	Positive %
+ChestX-ray14	Medical Imaging (X-ray)	112,120	~30,000	70/20/10	22.1%
+MIMIC-III	Structured EHR	58,976	~38,500	70/20/10	19.3%
+PhysioNet ECG	ECG Time-series	10,000	~6,000	70/20/10	26.7%
+Table 1: Summary of datasets used in the study.
+
+Dataset	Access Type	Approval Time	Registration Required
+ChestX-ray14	Free / Open	Immediate	No registration needed
+MIMIC-III	Credentialed	1–3 days	PhysioNet account + CITI course
+PhysioNet ECG	Free / Open	Immediate	PhysioNet account only
+Table 2: Access requirements for each dataset.
+2. Dataset 1 — ChestX-ray14 (NIH)
+2.1 Description
+ChestX-ray14 is a large-scale chest X-ray dataset released by the National Institutes of Health (NIH) Clinical Center. It is one of the most widely used public benchmarks in medical image analysis and serves as the imaging modality in this framework. The dataset contains frontal-view chest X-ray images collected from clinical routine examinations and is annotated with 14 common thoracic disease labels derived from radiology reports using natural language processing.
+The dataset is particularly well-suited for training deep convolutional neural networks (CNNs) on radiological disease classification tasks. In our framework, a pretrained ResNet-50 or EfficientNet backbone processes these images to extract spatial hierarchical features representing structural abnormalities in the lung fields, mediastinum, and surrounding tissue.
+2.2 Key Statistics
+Total Images: 112,120 frontal-view chest X-ray images
+Unique Patients: ~30,000 patients
+Disease Categories: 14 thoracic conditions including Pneumonia, Effusion, Cardiomegaly, Atelectasis, Consolidation, and No Finding
+Image Format: PNG, 1024 × 1024 pixels (resized to 224 × 224 for model input)
+Label Type: Multi-label classification (a patient may have multiple conditions)
+Positive Class Prevalence: 22.1% across splits
+Dataset Split Used: 70% Train / 20% Test / 10% Validation — stratified at patient level
+2.3 Preprocessing Applied
+Images are normalized to match the pixel intensity distribution across different scanner types and acquisition settings. Random horizontal flips, rotations (±15°), and contrast adjustments are applied during training for data augmentation. All images are resized to 224 × 224 pixels to conform to CNN input requirements. At inference time, only center-crop resize and normalization are applied.
+2.4 Access and Download
+Access Type: Free — no registration required
+License: Public domain / NIH open data
+Official Dataset Page: https://nihcc.app.box.com/v/ChestXray-NIHCC
+NIH Clinical Center Announcement: https://www.nih.gov/news-events/news-releases/nih-clinical-center-provides-one-largest-publicly-available-chest-x-ray-datasets-scientific-community
+Paper Reference: https://arxiv.org/abs/1705.02315
+Download Instructions:
+1. Visit the official dataset page at the link above.
+2. Download all 12 image archive files: images_001.tar.gz through images_012.tar.gz.
+3. Download the label file: Data_Entry_2017.csv.
+4. Extract all archives into the folder: data/raw/chestxray14/images/
+5. Place Data_Entry_2017.csv in: data/raw/chestxray14/
+2.5 Citation
+Wang, X., Peng, Y., Lu, L., Lu, Z., Bagheri, M., & Summers, R. M. (2017). ChestX-ray8: Hospital-scale Chest X-ray Database and Benchmarks. CVPR 2017.
+3. Dataset 2 — MIMIC-III (PhysioNet)
+3.1 Description
+MIMIC-III (Medical Information Mart for Intensive Care III) is a large, freely available database comprising de-identified health data from over 38,500 patients admitted to the Beth Israel Deaconess Medical Center (BIDMC) Intensive Care Units (ICUs) between 2001 and 2012. It is one of the most comprehensive and widely used clinical datasets in medical AI research.
+MIMIC-III provides rich structured electronic health record (EHR) data including laboratory test results, vital sign measurements, clinical notes, ICD-9 diagnosis codes, medication records, and demographic information. In this framework, a selection of laboratory values and vital signs are extracted, preprocessed, and encoded through a Multilayer Perceptron (MLP) branch to capture structured clinical patterns associated with disease severity.
+3.2 Key Statistics
+Total Records: 58,976 ICU admissions
+Unique Patients: ~38,500 patients
+Data Types: Lab results, vital signs, ICD codes, demographics, medications, clinical notes
+Key Features Used: Troponin, CRP, Creatinine, WBC, Heart Rate, SpO2, Blood Pressure, Age, Gender, Diagnosis codes
+Positive Class Prevalence: 19.3% across splits
+Dataset Split Used: 70% Train / 20% Test / 10% Validation — stratified at patient level
+Missing Data Handling: Median imputation for continuous features; one-hot encoding for categorical
+3.3 Preprocessing Applied
+Continuous clinical variables such as laboratory values and vital signs are normalized using z-score standardization. Missing values are imputed using median imputation per feature. Categorical variables including diagnosis codes and gender are one-hot encoded. All features are aggregated per ICU admission to form a fixed-length structured feature vector of dimension 64.
+3.4 Access and Download
+Access Type: Credentialed access — free but requires registration and CITI training
+Approval Time: Typically 1–3 business days after completing requirements
+PhysioNet Registration: https://physionet.org/register/
+MIMIC-III Dataset Page: https://physionet.org/content/mimiciii/1.4/
+CITI Training Course: https://physionet.org/about/citi-course/
+Access Request Form: https://physionet.org/content/mimiciii/1.4/
+Registration Steps:
+1. Create a free account at: https://physionet.org/register/
+2. Complete the CITI training course — select 'Data or Specimens Only Research' (~2 hours).
+3. Download your CITI completion certificate.
+4. Go to the MIMIC-III dataset page and click 'Request Access'.
+5. Upload your CITI certificate and submit the data use agreement.
+6. Once approved (1–3 days), download: ADMISSIONS.csv, PATIENTS.csv, LABEVENTS.csv, CHARTEVENTS.csv, DIAGNOSES_ICD.csv.
+7. Place all files in: data/raw/mimic3/
+3.5 Citation
+Johnson, A. E. W., Pollard, T. J., Shen, L., et al. (2016). MIMIC-III, a freely accessible critical care database. Scientific Data, 3, 160035.
+4. Dataset 3 — PhysioNet ECG Challenge 2020
+4.1 Description
+The PhysioNet/CinC Challenge 2020 dataset provides multi-lead electrocardiogram (ECG) recordings collected from multiple international clinical sites including hospitals in the USA, China, and Russia. The dataset was released as part of the PhysioNet/Computing in Cardiology Challenge 2020 with the goal of automating the detection of cardiac abnormalities from 12-lead ECG signals.
+ECG time-series data serves as the sequential physiological modality in our framework. A Bidirectional Long Short-Term Memory (Bi-LSTM) network with temporal attention pooling processes fixed-length ECG windows to extract temporal features such as heart rate variability, rhythm abnormalities, and waveform morphology patterns. These temporal features are critical for identifying cardiovascular conditions early.
+4.2 Key Statistics
+Total Recordings: 10,000 ECG signal recordings
+Unique Patients: ~6,000 patients
+Signal Type: 12-lead ECG waveforms (.mat and .hea format)
+Sampling Rate: 500 Hz (resampled to standard rate during preprocessing)
+Window Length Used: 60-second fixed-length windows
+Cardiac Conditions: 27 scored conditions including Atrial Fibrillation, Bundle Branch Block, ST-elevation, and Normal Sinus Rhythm
+Positive Class Prevalence: 26.7% across splits
+Dataset Split Used: 70% Train / 20% Test / 10% Validation — stratified at patient level
+4.3 Preprocessing Applied
+A Butterworth bandpass filter (0.5–40 Hz, order 4) is applied to remove baseline wander and high-frequency noise artifacts. Signals are then z-score normalized per recording. Fixed-length 60-second windows are extracted — random crop during training and center crop during evaluation. For recordings shorter than 60 seconds, zero-padding is applied.
+4.4 Access and Download
+Access Type: Free — requires PhysioNet account (same as MIMIC-III)
+Approval Time: Immediate after account creation
+PhysioNet Registration: https://physionet.org/register/
+Challenge 2020 Dataset Page: https://physionet.org/content/challenge-2020/1.0.2/
+Challenge Overview Paper: https://physionet.org/content/challenge-2020/1.0.2/
+Download Instructions:
+1. Register at: https://physionet.org/register/ (free account).
+2. Go to: https://physionet.org/content/challenge-2020/1.0.2/
+3. Click the 'Files' tab and download the training/ folder.
+4. Also download: dx_mapping_scored.csv (label mappings).
+5. Place all files in: data/raw/physionet_ecg/
+6. Alternatively, use wget: wget -r -N -c -np https://physionet.org/files/challenge-2020/1.0.2/training/
+4.5 Citation
+Reyna, M. A., et al. (2021). Will Two Do? Varying Dimensions in Electrocardiography: The PhysioNet/Computing in Cardiology Challenge 2021. Computing in Cardiology.
+5. Quick Start — Synthetic Data
+If you wish to run and test the code immediately without downloading and registering for the real datasets, a synthetic data generator is provided. It generates realistic synthetic versions of all three datasets that mimic the statistical properties of the originals.
+Run the generator:
+python data/generate_synthetic_data.py
+This will generate 200 synthetic X-ray images, 200 EHR records, and 200 ECG signals in the data/synthetic/ directory. You can then train the model using:
+python src/train.py --config configs/train_config.yaml
+For questions about dataset access, contact: veenaburra9@gmail.com
+SR University, Warangal, Telangana, India  |  Department of CS & AI
